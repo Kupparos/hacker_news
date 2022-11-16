@@ -10,6 +10,7 @@ import { TbSearch } from "react-icons/tb";
 import StoryCard from "../components/StoryCard";
 import { Story } from "../types";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../hooks/redux";
 
 const useStyles = createStyles((theme) => ({
   settings: {
@@ -60,6 +61,15 @@ interface MainPageProps {
 export const MainPage: FC<MainPageProps> = ({ ids }) => {
   const { classes } = useStyles();
   const [search, setSearch] = useState("");
+  const [update, setUpdate] = useState<boolean>(false)
+
+
+
+  const storyList = useAppSelector((state) => state.storyList.storyList)
+
+  // console.log(storyList)
+
+
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
@@ -83,7 +93,7 @@ export const MainPage: FC<MainPageProps> = ({ ids }) => {
           value={search}
           onChange={handleSearchChange}
         />
-        <Button color="orange">Update news</Button>
+        <Button color="orange" onClick={() => setUpdate(true)}>Update news</Button>
       </Group>
       {cardList}
     </Container>

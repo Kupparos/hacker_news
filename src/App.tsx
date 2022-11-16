@@ -10,7 +10,6 @@ import PageHeader from "./components/PageHeader";
 import { MainPage } from "./pages/MainPage";
 import NewsPage from "./pages/NewsPage";
 import { getNews } from "./hooks/getData";
-import { Story } from "./types";
 import { ErrorPage } from "./components/ErrorPage";
 
 function App() {
@@ -35,13 +34,10 @@ function App() {
 
   useEffect(() => {
     setIsLoading(true);
-    getNewsIds();
-    setIsLoading(false);
+    getNewsIds().then(() => setIsLoading(false));
   }, []);
 
   // useEffect(() => {}, [newsIds]);
-
-  console.log(newsIds);
 
   return (
     <ColorSchemeProvider
@@ -54,14 +50,25 @@ function App() {
         withNormalizeCSS
       >
         <PageHeader />
-        <Switch>
-          <Route path="/news/:id">
-            <NewsPage/>
-          </Route>
-          <Route path="/">
-            {isLoading ? <p>Loading...</p> : <MainPage ids={newsIds} />}
-          </Route>
-        </Switch>
+        {error ? (
+          <ErrorPage />
+        ) : (
+          <Switch>
+            <Route path="/news/:id">
+              <NewsPage />
+            </Route>
+            <Route path="/">
+              {isLoading ? (
+                <p style={{ margin: "20px" }}>Loading...</p>
+              ) : (
+                <MainPage ids={newsIds} />
+              )}
+            </Route>
+            <Route path="*">
+              <ErrorPage />
+            </Route>
+          </Switch>
+        )}
       </MantineProvider>
     </ColorSchemeProvider>
   );

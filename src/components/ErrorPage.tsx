@@ -4,7 +4,7 @@ const useStyles = createStyles((theme) => ({
   root: {
     paddingTop: 80,
     paddingBottom: 120,
-    backgroundColor: theme.fn.variant({ variant: 'filled', color: theme.primaryColor }).background,
+    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
   },
 
   label: {
@@ -12,8 +12,8 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 900,
     fontSize: 220,
     lineHeight: 1,
-    marginBottom: theme.spacing.xl * 1.5,
-    color: theme.colors[theme.primaryColor][3],
+    marginBottom: theme.spacing.xl * 1,
+    color: theme.colors.yellow,
 
     [theme.fn.smallerThan('sm')]: {
       fontSize: 120,
@@ -25,7 +25,7 @@ const useStyles = createStyles((theme) => ({
     textAlign: 'center',
     fontWeight: 900,
     fontSize: 38,
-    color: theme.white,
+    color: theme.colors.yellow[7],
 
     [theme.fn.smallerThan('sm')]: {
       fontSize: 32,
@@ -37,7 +37,7 @@ const useStyles = createStyles((theme) => ({
     margin: 'auto',
     marginTop: theme.spacing.xl,
     marginBottom: theme.spacing.xl * 1.5,
-    color: theme.colors[theme.primaryColor][1],
+    color: theme.colors.yellow[5],
   },
 }));
 
@@ -54,7 +54,7 @@ export function ErrorPage() {
           already notified. Try refreshing the page.
         </Text>
         <Group position="center">
-          <Button variant="white" size="md">
+          <Button variant="outline" color="orange" size="md" onClick={() => window.location.reload()}>
             Refresh the page
           </Button>
         </Group>

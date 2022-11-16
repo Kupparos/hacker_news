@@ -5,6 +5,8 @@ import { CiStar, CiUser } from "react-icons/ci";
 import { BiComment } from "react-icons/bi";
 import { Story } from "../types";
 import { getStory } from "../hooks/getData";
+import { useAppDispatch } from "../hooks/redux";
+import { addStoryInList } from "../store/reducers/StoryReducer";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -27,9 +29,9 @@ const useStyles = createStyles((theme) => ({
     padding: theme.spacing.md,
   },
   info: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px',
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
   },
 }));
 
@@ -40,6 +42,7 @@ interface StoryCardProps {
 const StoryCard: FC<StoryCardProps> = ({ id }) => {
   const { classes } = useStyles();
   const [story, setStory] = useState<Story>();
+  const dispatch = useAppDispatch()
 
   const getStoryById = async () => {
     const data = await getStory(id);
@@ -48,6 +51,7 @@ const StoryCard: FC<StoryCardProps> = ({ id }) => {
       // setError(true);
     } else {
       setStory(data);
+      dispatch(addStoryInList(data))
     }
   };
 
@@ -59,7 +63,13 @@ const StoryCard: FC<StoryCardProps> = ({ id }) => {
     <Card withBorder radius="md" p={0} className={classes.card}>
       <Group noWrap spacing={0}>
         <div className={classes.body}>
-          <Text transform="uppercase" color="dimmed" weight={700} size="xs" className={classes.info}>
+          <Text
+            transform="uppercase"
+            color="dimmed"
+            weight={700}
+            size="xs"
+            className={classes.info}
+          >
             <CiUser />
             {story?.by}
           </Text>
@@ -75,7 +85,7 @@ const StoryCard: FC<StoryCardProps> = ({ id }) => {
             <Text size="xs" color="dimmed">
               •
             </Text>
-            <Text size="xs" color="dimmed"  className={classes.info} miw={60}>
+            <Text size="xs" color="dimmed" className={classes.info} miw={60}>
               <CiStar />
               {story?.score === 1
                 ? `${story?.score} point`
@@ -84,14 +94,14 @@ const StoryCard: FC<StoryCardProps> = ({ id }) => {
             <Text size="xs" color="dimmed">
               •
             </Text>
-            <Text size="xs" color="dimmed"  className={classes.info}>
+            <Text size="xs" color="dimmed" className={classes.info}>
               <BiComment />
-              {(story?.kids?.length ? story?.kids?.length : null)}
+              {story?.descendants ? story?.descendants : null}
             </Text>
           </Group>
         </div>
       </Group>
-    </Card>    
+    </Card>
   );
 };
 
