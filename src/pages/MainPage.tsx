@@ -10,6 +10,7 @@ import { TbSearch } from "react-icons/tb";
 import StoryCard from "../components/StoryCard";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../hooks/redux";
+import { Story } from "../types";
 
 const useStyles = createStyles((theme) => ({
   settings: {
@@ -25,26 +26,23 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 interface MainPageProps {
-  ids: number[];
   update: boolean
   setUpdate: (update: boolean) => void
 }
-export const MainPage: FC<MainPageProps> = ({ ids, update, setUpdate }) => {
+export const MainPage: FC<MainPageProps> = ({ update, setUpdate }) => {
   const { classes } = useStyles();
   const [search, setSearch] = useState("");
 
   const storyList = useAppSelector((state) => state.storyList.storyList)
-  // localStorage.setItem('storyList', JSON.stringify(storyList))
-
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
     setSearch(value);
   };
 
-  const cardList = ids?.slice(0, 20).map((id: number) => (
-    <Link to={{ pathname: `/news/${id}` }} className={classes.link} key={id}>
-      <StoryCard id={id} />
+  const cardList = storyList.map((item: Story) => (
+    <Link to={{ pathname: `/news/${item.id}` }} className={classes.link} key={item.id}>
+      <StoryCard story={item} />
     </Link>
   ));
 
@@ -53,7 +51,7 @@ export const MainPage: FC<MainPageProps> = ({ ids, update, setUpdate }) => {
       <Group className={classes.settings}>
         <TextInput
           className={classes.search}
-          placeholder="Search by any field"
+          placeholder="Search by any title"
           icon={<TbSearch size={14} />}
           value={search}
           onChange={handleSearchChange}

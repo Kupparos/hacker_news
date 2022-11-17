@@ -15,6 +15,7 @@ import { CommentSection } from "../components/CommentSection";
 import moment from "moment";
 import { useAppSelector } from "../hooks/redux";
 import { Story } from "../types";
+import { getData } from "../hooks/getData";
 
 const useStyles = createStyles((theme) => ({
   head: {
@@ -73,18 +74,30 @@ type Id = {
 
 export default function NewsPage() {
   const { classes } = useStyles();
+
   let id = useParams<Id>();
   const storyList = useAppSelector((state) => state.storyList.storyList);
+
   const [currentNews, setCurrentNews] = useState<Story>();
-  const [update, setUpdate] = useState<boolean>(false)
+  const [update, setUpdate] = useState<boolean>(false);
 
   const news = storyList.find((item) => item.id === Number(id.id));
 
-  useEffect(() => {
-    setCurrentNews(news);
-  }, []);
+  const getNews = async () => {
+    return await getData<Story>(`item/${Number(id.id)}.json`);
+  };
 
-  console.log(storyList)
+  useEffect(() => {
+    if (news) {
+      return setCurrentNews(news);
+    }
+
+    getNews().then((value) => {
+      if (!(value instanceof Error)) {
+        setCurrentNews(value);
+      }
+    });
+  }, []);
 
   return (
     <Container maw={"95%"}>
@@ -132,7 +145,7 @@ export default function NewsPage() {
       {currentNews?.kids
         ? currentNews?.kids.flat().map((item: number) => (
             <div key={item}>
-              <CommentSection id={item} update={update} setUpdate={setUpdate}/>
+              <CommentSection id={item} update={update} setUpdate={setUpdate} />
             </div>
           ))
         : null}

@@ -1,6 +1,6 @@
 import { createStyles, Text, Group, UnstyledButton } from "@mantine/core";
 import { FC, useEffect, useState } from "react";
-import { getComment } from "../hooks/getData";
+import { getData } from "../hooks/getData";
 import { Comment } from "../types";
 import moment from "moment";
 import { IoChevronDownSharp } from "react-icons/io5";
@@ -33,13 +33,12 @@ export const CommentSection: FC<CommentSimpleProps> = ({ id, update, setUpdate, 
   const [openComments, setOpenComments] = useState<boolean>(open || false);
 
   const getCommentById = async () => {
-    const data = await getComment(id);
+    const data = await getData<Comment>(`item/${id}.json`);
 
-    if (data instanceof Error) {
-      console.log(data)
-    } else {
+    if (!(data instanceof Error)) {
       setComment(data);
     }
+    
   };
 
   useEffect(() => {

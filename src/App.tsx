@@ -10,45 +10,61 @@ import { Route, Switch } from "react-router-dom";
 import PageHeader from "./components/PageHeader";
 import { MainPage } from "./pages/MainPage";
 import NewsPage from "./pages/NewsPage";
-import { getNews } from "./hooks/getData";
+import { getData } from "./hooks/getData";
 import { ErrorPage } from "./components/ErrorPage";
+import { Story } from "./types";
+import { useAppDispatch } from "./hooks/redux";
+import { addStoryInList } from "./store/reducers/StoryReducer";
 
 function App() {
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
-  const [newsIds, setNewsIds] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [update, setUpdate] = useState<boolean>(false);
 
-  const getNewsIds = async () => {
-    const data = await getNews();
+  const dispatch = useAppDispatch();
 
-    if (data instanceof Error) {
-      setError(true);
-    } else {
-      setNewsIds(data);
+  const getNewsList = async () => {
+    const ids = await getData<number[]>("newstories.json");
+
+    if (ids instanceof Error) {
+      return setError(true);
+    }
+
+    ids.slice(0, 100).map((id) => getNews(id));
+  };
+
+  const getNews = async (id: number) => {
+    const news = await getData<Story>(`item/${id}.json`);
+    
+    if (!(news instanceof Error)) {
+      dispatch(addStoryInList(news));
     }
   };
 
   useEffect(() => {
     setIsLoading(true);
-    getNewsIds().then(() => {
+
+    getNewsList().then(() => {
       setIsLoading(false);
     });
+
     return setUpdate(false);
   }, [update]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIsLoading(true);
-      getNewsIds().then(() => {
+
+      getNewsList().then(() => {
         setIsLoading(false);
       });
     }, 60000);
-    return () => clearInterval(interval)
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -73,7 +89,7 @@ function App() {
               {isLoading ? (
                 <LoadingOverlay visible={true} overlayBlur={2} />
               ) : (
-                <MainPage ids={newsIds} update={update} setUpdate={setUpdate} />
+                <MainPage update={update} setUpdate={setUpdate} />
               )}
             </Route>
             <Route path="*">

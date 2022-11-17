@@ -1,12 +1,9 @@
 import { createStyles, Card, Text, Group } from "@mantine/core";
-import { FC, useState, useEffect } from "react";
+import { FC} from "react";
 import moment from "moment";
 import { CiStar, CiUser } from "react-icons/ci";
 import { BiComment } from "react-icons/bi";
 import { Story } from "../types";
-import { getStory } from "../hooks/getData";
-import { useAppDispatch } from "../hooks/redux";
-import { addStoryInList } from "../store/reducers/StoryReducer";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -36,28 +33,11 @@ const useStyles = createStyles((theme) => ({
 }));
 
 interface StoryCardProps {
-  id: number;
+  story: Story;
 }
 
-const StoryCard: FC<StoryCardProps> = ({ id }) => {
+const StoryCard: FC<StoryCardProps> = ({ story }) => {
   const { classes } = useStyles();
-  const [story, setStory] = useState<Story>();
-  const dispatch = useAppDispatch()
-
-  const getStoryById = async () => {
-    const data = await getStory(id);
-
-    if (data instanceof Error) {
-      // setError(true);
-    } else {
-      setStory(data);
-      dispatch(addStoryInList(data))
-    }
-  };
-
-  useEffect(() => {
-    getStoryById();
-  }, []);
 
   return (
     <Card withBorder radius="md" p={0} className={classes.card}>
