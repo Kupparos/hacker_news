@@ -24,50 +24,20 @@ const useStyles = createStyles((theme) => ({
     textDecoration: "none",
   },
 }));
-
-// function filterData(data: RowData[], search: string) {
-//   const query = search.toLowerCase().trim();
-//   return data.filter((item) =>
-//     keys(data[0]).some((key) => item[key].toLowerCase().includes(query))
-//   );
-// }
-
-// function sortData(
-//   data: RowData[],
-//   payload: { sortBy: keyof RowData | null; reversed: boolean; search: string }
-// ) {
-//   const { sortBy } = payload;
-
-//   if (!sortBy) {
-//     return filterData(data, payload.search);
-//   }
-
-//   return filterData(
-//     [...data].sort((a, b) => {
-//       if (payload.reversed) {
-//         return b[sortBy].localeCompare(a[sortBy]);
-//       }
-
-//       return a[sortBy].localeCompare(b[sortBy]);
-//     }),
-//     payload.search
-//   );
-// }
-
 interface MainPageProps {
   ids: number[];
+  update: boolean
+  setUpdate: (update: boolean) => void
 }
-export const MainPage: FC<MainPageProps> = ({ ids }) => {
+export const MainPage: FC<MainPageProps> = ({ ids, update, setUpdate }) => {
   const { classes } = useStyles();
   const [search, setSearch] = useState("");
-  const [update, setUpdate] = useState<boolean>(false)
 
   const storyList = useAppSelector((state) => state.storyList.storyList)
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
     setSearch(value);
-    // setSortedData(sortData(data, { sortBy, reversed: reverseSortDirection, search: value }));
   };
 
   const cardList = ids?.slice(0, 20).map((id: number) => (

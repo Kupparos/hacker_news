@@ -21,6 +21,7 @@ function App() {
   const [newsIds, setNewsIds] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
+  const [update, setUpdate] = useState<boolean>(false);
 
   const getNewsIds = async () => {
     const data = await getNews();
@@ -34,7 +35,19 @@ function App() {
 
   useEffect(() => {
     setIsLoading(true);
-    getNewsIds().then(() => setIsLoading(false));
+    getNewsIds().then(() => {
+      setIsLoading(false);
+    });
+    return setUpdate(false);
+  }, [update]);
+
+  useEffect(() => {
+    setInterval(() => {
+      setIsLoading(true);
+      getNewsIds().then(() => {
+        setIsLoading(false);
+      });
+    }, 60000);
   }, []);
 
   return (
@@ -57,9 +70,9 @@ function App() {
             </Route>
             <Route path="/">
               {isLoading ? (
-                <LoadingOverlay visible={true} overlayBlur={2}/>
+                <LoadingOverlay visible={true} overlayBlur={2} />
               ) : (
-                <MainPage ids={newsIds} />
+                <MainPage ids={newsIds} update={update} setUpdate={setUpdate} />
               )}
             </Route>
             <Route path="*">

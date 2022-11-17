@@ -130,7 +130,7 @@ export default function NewsPage() {
       {currentNews?.kids
         ? currentNews?.kids.flat().map((item: number) => (
             <div key={item}>
-              <CommentSection id={item} update={update}/>
+              <CommentSection id={item} update={update} setUpdate={setUpdate}/>
             </div>
           ))
         : null}

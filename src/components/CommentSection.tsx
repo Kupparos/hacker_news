@@ -23,13 +23,14 @@ const useStyles = createStyles((theme) => ({
 interface CommentSimpleProps {
   id: number;
   update: boolean;
-  hh?: boolean;
+  setUpdate: (update: boolean) => void
+  open?: boolean;
 }
 
-export const CommentSection: FC<CommentSimpleProps> = ({ id, update, hh }) => {
+export const CommentSection: FC<CommentSimpleProps> = ({ id, update, setUpdate, open }) => {
   const { classes } = useStyles();
   const [comment, setComment] = useState<Comment>();
-  const [openComments, setOpenComments] = useState<boolean>(hh || false);
+  const [openComments, setOpenComments] = useState<boolean>(open || false);
 
   const getCommentById = async () => {
     const data = await getComment(id);
@@ -43,7 +44,10 @@ export const CommentSection: FC<CommentSimpleProps> = ({ id, update, hh }) => {
 
   useEffect(() => {
     getCommentById();
+    return setUpdate(false)
   }, [update]);
+
+  console.log(update)
 
   function parseHTMLTags(comment: Comment): string {
     if (comment) {
@@ -85,7 +89,7 @@ export const CommentSection: FC<CommentSimpleProps> = ({ id, update, hh }) => {
           {openComments && comment.kids
             ? comment.kids.flat().map((item: number) => (
                 <div key={item} style={{ marginLeft: "3vw" }}>
-                  <CommentSection id={item} update={update} hh={openComments} />
+                  <CommentSection id={item} update={update} setUpdate={setUpdate} open={openComments} />
                 </div>
               ))
             : null}
