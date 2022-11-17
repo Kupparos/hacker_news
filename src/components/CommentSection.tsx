@@ -1,51 +1,57 @@
-import { createStyles, Text, Group } from "@mantine/core";
+import { createStyles, Text, Group, UnstyledButton } from "@mantine/core";
 import { FC, useEffect, useState } from "react";
 import { getComment } from "../hooks/getData";
 import { Comment } from "../types";
-// import { compile } from "html-to-text";
 import moment from "moment";
+import { IoChevronDownSharp } from "react-icons/io5";
 
 const useStyles = createStyles((theme) => ({
   body: {
     paddingLeft: 20,
     paddingTop: theme.spacing.sm,
   },
+  openComments: {
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    marginTop: "5px",
+    color: theme.colorScheme === "light" ? theme.colors.dark[7] : theme.white,
+    fontSize: "14px",
+  },
 }));
 
 interface CommentSimpleProps {
   id: number;
   update: boolean;
+  hh?: boolean;
 }
 
-export const CommentSection: FC<CommentSimpleProps> = ({ id, update }) => {
+export const CommentSection: FC<CommentSimpleProps> = ({ id, update, hh }) => {
   const { classes } = useStyles();
   const [comment, setComment] = useState<Comment>();
+  const [openComments, setOpenComments] = useState<boolean>(hh || false);
 
-  // const dispatch = useAppDispatch()
-
-  const getStoryById = async () => {
+  const getCommentById = async () => {
     const data = await getComment(id);
 
     if (data instanceof Error) {
-      // setError(true);
+      console.log(data)
     } else {
       setComment(data);
-      // dispatch(addStoryInList(data))
     }
   };
 
   useEffect(() => {
-    getStoryById();
+    getCommentById();
   }, [update]);
 
   function parseHTMLTags(comment: Comment): string {
-    
     if (comment) {
       const div = document.createElement("div");
       div.innerHTML = comment.text;
       return div.textContent || div.innerText || "";
     }
-    return ''
+    return "";
   }
 
   return (
@@ -63,10 +69,23 @@ export const CommentSection: FC<CommentSimpleProps> = ({ id, update }) => {
           <Text className={classes.body} size="sm">
             {parseHTMLTags(comment)}
           </Text>
-          {comment?.kids
-            ? comment?.kids.flat().map((item: number) => (
-                <div key={item} style={{ marginLeft: "6vw" }}>
-                  <CommentSection id={item} update={update} />
+          {comment.kids?.length !== 0 ? (
+            <UnstyledButton
+              className={classes.openComments}
+              onClick={() => setOpenComments((prevState) => !prevState)}
+            >
+              <IoChevronDownSharp
+                style={
+                  !openComments ? undefined : { transform: "rotate(180deg)" }
+                }
+              />{" "}
+              comments
+            </UnstyledButton>
+          ) : null}
+          {openComments && comment.kids
+            ? comment.kids.flat().map((item: number) => (
+                <div key={item} style={{ marginLeft: "3vw" }}>
+                  <CommentSection id={item} update={update} hh={openComments} />
                 </div>
               ))
             : null}

@@ -28,7 +28,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function PageHeader() {
-  const { classes, cx } = useStyles();
+  const { classes } = useStyles();
 
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const theme = useMantineTheme();

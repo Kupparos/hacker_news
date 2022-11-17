@@ -4,6 +4,7 @@ import {
   MantineProvider,
   ColorSchemeProvider,
   ColorScheme,
+  LoadingOverlay,
 } from "@mantine/core";
 import { Route, Switch } from "react-router-dom";
 import PageHeader from "./components/PageHeader";
@@ -18,7 +19,6 @@ function App() {
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
   const [newsIds, setNewsIds] = useState<number[]>([]);
-  // const [newsStoryList, setNewsStoryList] = useState<Story[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
 
@@ -36,8 +36,6 @@ function App() {
     setIsLoading(true);
     getNewsIds().then(() => setIsLoading(false));
   }, []);
-
-  // useEffect(() => {}, [newsIds]);
 
   return (
     <ColorSchemeProvider
@@ -59,7 +57,7 @@ function App() {
             </Route>
             <Route path="/">
               {isLoading ? (
-                <p style={{ margin: "20px" }}>Loading...</p>
+                <LoadingOverlay visible={true} overlayBlur={2}/>
               ) : (
                 <MainPage ids={newsIds} />
               )}
