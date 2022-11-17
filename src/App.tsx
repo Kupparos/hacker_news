@@ -42,12 +42,13 @@ function App() {
   }, [update]);
 
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       setIsLoading(true);
       getNewsIds().then(() => {
         setIsLoading(false);
       });
     }, 60000);
+    return () => clearInterval(interval)
   }, []);
 
   return (

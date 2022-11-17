@@ -47,7 +47,7 @@ export const CommentSection: FC<CommentSimpleProps> = ({ id, update, setUpdate, 
     return setUpdate(false)
   }, [update]);
 
-  console.log(update)
+  // console.log(update)
 
   function parseHTMLTags(comment: Comment): string {
     if (comment) {

@@ -84,6 +84,8 @@ export default function NewsPage() {
     setCurrentNews(news);
   }, []);
 
+  console.log(storyList)
+
   return (
     <Container maw={"95%"}>
       <Group className={classes.head}>

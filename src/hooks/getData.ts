@@ -24,7 +24,7 @@ export async function getStory(id: number): Promise<Story | Error> {
       `https://hacker-news.firebaseio.com/v0/item/${id}.json`
     );
 
-    return storyMapper(data);
+    return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       return new Error(error.message);
@@ -40,7 +40,7 @@ export async function getComment(id: number): Promise<Comment | Error> {
       `https://hacker-news.firebaseio.com/v0/item/${id}.json`
     );
 
-    return commentMapper(data);
+    return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       return new Error(error.message);
@@ -50,28 +50,3 @@ export async function getComment(id: number): Promise<Comment | Error> {
   }
 }
 
-function storyMapper(arg: any): Story {
-   return {
-    by: (arg.by) ? String(arg.by) : "",
-    descendants: (arg.descendants) ? Number(arg.descendants) : 0,
-    id: (arg.id) ? Number(arg.id) : 0,
-    kids: (arg.kids) ? Array(arg.kids) : [],
-    score: (arg.score) ? Number(arg.score) : 0,
-    time: (arg.time) ? Number(arg.time) : 0,
-    title: (arg.title) ? String(arg.title) : '',
-    type: (arg.type) ? String(arg.type) : '',
-    url: (arg.url) ? String(arg.url) : '',
-  }
-}
-
-function commentMapper(arg: any): Comment {
-  return {
-   by: (arg.by) ? String(arg.by) : "",
-   id: (arg.id) ? Number(arg.id) : 0,
-   kids: (arg.kids) ? Array(arg.kids) : [],
-   parent: (arg.parent) ? Number(arg.parent) : 0,
-   text: (arg.text) ? String(arg.text) : '',
-   time: (arg.time) ? Number(arg.time) : 0,
-   type: (arg.type) ? String(arg.type) : '',
- }
-}

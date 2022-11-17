@@ -34,6 +34,8 @@ export const MainPage: FC<MainPageProps> = ({ ids, update, setUpdate }) => {
   const [search, setSearch] = useState("");
 
   const storyList = useAppSelector((state) => state.storyList.storyList)
+  // localStorage.setItem('storyList', JSON.stringify(storyList))
+
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
