@@ -41,7 +41,7 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export function ErrorPage() {
+export function ErrorCard() {
   const { classes } = useStyles();
 
   return (

@@ -1,9 +1,16 @@
-import { createStyles, Text, Group, UnstyledButton } from "@mantine/core";
+import {
+  createStyles,
+  Text,
+  Group,
+  UnstyledButton,
+  Loader,
+} from "@mantine/core";
 import { FC, useEffect, useState } from "react";
 import { getData } from "../hooks/getData";
 import { Comment } from "../types";
 import moment from "moment";
 import { IoChevronDownSharp } from "react-icons/io5";
+import { parseHTMLTags } from "../utils";
 
 const useStyles = createStyles((theme) => ({
   body: {
@@ -23,14 +30,20 @@ const useStyles = createStyles((theme) => ({
 interface CommentSimpleProps {
   id: number;
   update: boolean;
-  setUpdate: (update: boolean) => void
+  setUpdate: (update: boolean) => void;
   open?: boolean;
 }
 
-export const CommentSection: FC<CommentSimpleProps> = ({ id, update, setUpdate, open }) => {
+export const CommentSection: FC<CommentSimpleProps> = ({
+  id,
+  update,
+  setUpdate,
+  open,
+}) => {
   const { classes } = useStyles();
   const [comment, setComment] = useState<Comment>();
   const [openComments, setOpenComments] = useState<boolean>(open || false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getCommentById = async () => {
     const data = await getData<Comment>(`item/${id}.json`);
@@ -38,62 +51,65 @@ export const CommentSection: FC<CommentSimpleProps> = ({ id, update, setUpdate, 
     if (!(data instanceof Error)) {
       setComment(data);
     }
-    
   };
 
   useEffect(() => {
-    getCommentById();
-    return setUpdate(false)
+    setIsLoading(true);
+    getCommentById().then(() => setIsLoading(false));
+    return setUpdate(false);
   }, [update]);
-
-  // console.log(update)
-
-  function parseHTMLTags(comment: Comment): string {
-    if (comment) {
-      const div = document.createElement("div");
-      div.innerHTML = comment.text;
-      return div.textContent || div.innerText || "";
-    }
-    return "";
-  }
 
   return (
     <>
-      {comment?.by && comment.text && comment.time ? (
-        <div style={{ margin: "10px" }}>
-          <Group>
-            <div>
-              <Text size="sm">{comment?.by}</Text>
-              <Text size="xs" color="dimmed">
-                {moment.unix(Number(comment?.time)).startOf("minute").fromNow()}
-              </Text>
-            </div>
-          </Group>
-          <Text className={classes.body} size="sm">
-            {parseHTMLTags(comment)}
-          </Text>
-          {comment.kids?.length !== 0 ? (
-            <UnstyledButton
-              className={classes.openComments}
-              onClick={() => setOpenComments((prevState) => !prevState)}
-            >
-              <IoChevronDownSharp
-                style={
-                  !openComments ? undefined : { transform: "rotate(180deg)" }
-                }
-              />{" "}
-              comments
-            </UnstyledButton>
-          ) : null}
-          {openComments && comment.kids
-            ? comment.kids.flat().map((item: number) => (
+      {isLoading ? (
+        <Loader color="gray" size="sm" variant="dots" m={20} />
+      ) : (
+        comment?.by &&
+        comment.text &&
+        comment.time && (
+          <div style={{ margin: "10px" }}>
+            <Group>
+              <div>
+                <Text size="sm">{comment.by}</Text>
+                <Text size="xs" color="dimmed">
+                  {moment
+                    .unix(Number(comment.time))
+                    .startOf("minute")
+                    .fromNow()}
+                </Text>
+              </div>
+            </Group>
+            <Text className={classes.body} size="sm">
+              {parseHTMLTags(comment.text)}
+            </Text>
+            {comment.kids?.length !== 0 && (
+              <UnstyledButton
+                className={classes.openComments}
+                onClick={() => setOpenComments((prevState) => !prevState)}
+              >
+                <IoChevronDownSharp
+                  style={
+                    !openComments ? undefined : { transform: "rotate(180deg)" }
+                  }
+                />{" "}
+                comments
+              </UnstyledButton>
+            )}
+            {openComments &&
+              comment.kids &&
+              comment.kids.flat().map((item: number) => (
                 <div key={item} style={{ marginLeft: "3vw" }}>
-                  <CommentSection id={item} update={update} setUpdate={setUpdate} open={openComments} />
+                  <CommentSection
+                    id={item}
+                    update={update}
+                    setUpdate={setUpdate}
+                    open={openComments}
+                  />
                 </div>
-              ))
-            : null}
-        </div>
-      ) : null}
+              ))}
+          </div>
+        )
+      )}
     </>
   );
 };

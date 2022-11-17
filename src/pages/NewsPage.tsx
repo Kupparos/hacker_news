@@ -6,6 +6,7 @@ import {
   Anchor,
   Card,
   Button,
+  Loader,
 } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { IoArrowBackSharp } from "react-icons/io5";
@@ -80,6 +81,7 @@ export default function NewsPage() {
 
   const [currentNews, setCurrentNews] = useState<Story>();
   const [update, setUpdate] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const news = storyList.find((item) => item.id === Number(id.id));
 
@@ -88,67 +90,94 @@ export default function NewsPage() {
   };
 
   useEffect(() => {
+    setIsLoading(true);
     if (news) {
+      setIsLoading(false);
       return setCurrentNews(news);
     }
 
     getNews().then((value) => {
       if (!(value instanceof Error)) {
         setCurrentNews(value);
+        setIsLoading(false);
       }
     });
   }, []);
 
+  function commentAmaunt(value: number) {
+    switch (value) {
+      case 0:
+        return "no comments";
+      case 1:
+        return "1 comment";
+      default:
+        return `${value} comments`;
+    }
+  }
+
+  // console.log(isLoading)
+
   return (
-    <Container maw={"95%"}>
-      <Group className={classes.head}>
-        <Link to="/">
-          <IoArrowBackSharp className={classes.back} />
-        </Link>
-        <Button color="orange" size="md" onClick={() => setUpdate(true)}>
-          Refresh comments
-        </Button>
-      </Group>
-      <Card className={classes.card}>
-        <Text
-          transform="uppercase"
-          weight={600}
-          size="md"
-          className={classes.author}
-        >
-          <CiUser />
-          {currentNews?.by}
-        </Text>
-        <Text size="md" mt="xs" mb="xs">
-          {moment.unix(Number(currentNews?.time)).startOf("minute").fromNow()}
-        </Text>
-        <Text className={classes.title} mt="xs" mb="md">
-          {currentNews?.title}
-        </Text>
-        <Group className={classes.group}>
-          <Anchor
-            href={currentNews?.url}
-            target="_blank"
-            className={classes.url}
-          >
-            Link to original news
-          </Anchor>
-          <Text size="xs" className={classes.comments}>
-            {currentNews?.descendants ? null : "no comments"}
-            {currentNews?.descendants === 1 ? `1 comment` : null}
-            {Number(currentNews?.descendants) > 1
-              ? `${currentNews?.descendants} comments`
-              : null}
-          </Text>
-        </Group>
-      </Card>
-      {currentNews?.kids
-        ? currentNews?.kids.flat().map((item: number) => (
-            <div key={item}>
-              <CommentSection id={item} update={update} setUpdate={setUpdate} />
-            </div>
-          ))
-        : null}
-    </Container>
+    <>
+      {currentNews && (
+        <Container maw={"95%"}>
+          <Group className={classes.head}>
+            <Link to="/">
+              <IoArrowBackSharp className={classes.back} />
+            </Link>
+            <Button color="orange" size="md" onClick={() => setUpdate(true)}>
+              Refresh comments
+            </Button>
+          </Group>
+          {isLoading ? (
+            <Loader color="yellow" variant="bars" m={'0 auto'}/>
+          ) : (
+            <Card className={classes.card}>
+              <Text
+                transform="uppercase"
+                weight={600}
+                size="md"
+                className={classes.author}
+              >
+                <CiUser />
+                {currentNews.by}
+              </Text>
+              <Text size="md" mt="xs" mb="xs">
+                {moment
+                  .unix(Number(currentNews.time))
+                  .startOf("minute")
+                  .fromNow()}
+              </Text>
+              <Text className={classes.title} mt="xs" mb="md">
+                {currentNews.title}
+              </Text>
+              <Group className={classes.group}>
+                <Anchor
+                  href={currentNews.url}
+                  target="_blank"
+                  className={classes.url}
+                >
+                  Link to original news
+                </Anchor>
+                <Text size="xs" className={classes.comments}>
+                  {commentAmaunt(currentNews.descendants)}
+                </Text>
+              </Group>
+            </Card>
+          )}
+
+          {currentNews.kids &&
+            currentNews.kids.flat().map((item: number) => (
+              <div key={item}>
+                <CommentSection
+                  id={item}
+                  update={update}
+                  setUpdate={setUpdate}
+                />
+              </div>
+            ))}
+        </Container>
+      )}
+    </>
   );
 }

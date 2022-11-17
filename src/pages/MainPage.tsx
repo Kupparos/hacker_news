@@ -26,22 +26,31 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 interface MainPageProps {
-  update: boolean
-  setUpdate: (update: boolean) => void
+  update: boolean;
+  setUpdate: (update: boolean) => void;
 }
 export const MainPage: FC<MainPageProps> = ({ update, setUpdate }) => {
   const { classes } = useStyles();
   const [search, setSearch] = useState("");
 
-  const storyList = useAppSelector((state) => state.storyList.storyList)
+  const storyList = useAppSelector((state) => state.storyList.storyList);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
     setSearch(value);
   };
 
-  const cardList = storyList.map((item: Story) => (
-    <Link to={{ pathname: `/news/${item.id}` }} className={classes.link} key={item.id}>
+  const filterData = (data: Story[], search: string) => {
+    const query = search.toLowerCase().trim();
+    return data.filter((item) => item.title.toLowerCase().includes(query))
+  };
+
+  const cardList = filterData(storyList, search).map((item: Story) => (
+    <Link
+      to={{ pathname: `/news/${item.id}` }}
+      className={classes.link}
+      key={item.id}
+    >
       <StoryCard story={item} />
     </Link>
   ));
@@ -51,12 +60,14 @@ export const MainPage: FC<MainPageProps> = ({ update, setUpdate }) => {
       <Group className={classes.settings}>
         <TextInput
           className={classes.search}
-          placeholder="Search by any title"
+          placeholder="Search by title"
           icon={<TbSearch size={14} />}
           value={search}
           onChange={handleSearchChange}
         />
-        <Button color="orange" onClick={() => setUpdate(true)}>Update news</Button>
+        <Button color="orange" onClick={() => setUpdate(true)}>
+          Update news
+        </Button>
       </Group>
       {cardList}
     </Container>

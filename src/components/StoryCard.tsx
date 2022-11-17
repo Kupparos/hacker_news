@@ -1,5 +1,5 @@
 import { createStyles, Card, Text, Group } from "@mantine/core";
-import { FC} from "react";
+import { FC } from "react";
 import moment from "moment";
 import { CiStar, CiUser } from "react-icons/ci";
 import { BiComment } from "react-icons/bi";
@@ -40,48 +40,57 @@ const StoryCard: FC<StoryCardProps> = ({ story }) => {
   const { classes } = useStyles();
 
   return (
-    <Card withBorder radius="md" p={0} className={classes.card}>
-      <Group noWrap spacing={0}>
-        <div className={classes.body}>
-          <Text
-            transform="uppercase"
-            color="dimmed"
-            weight={700}
-            size="xs"
-            className={classes.info}
-          >
-            <CiUser />
-            {story?.by}
-          </Text>
-          <Text className={classes.title} mt="xs" mb="md">
-            {story?.title}
-          </Text>
-          <Group noWrap spacing="xs">
-            <Text size="xs" color="dimmed">
-              {moment
-                .unix(Number(story?.time))
-                .format("MMMM Do YYYY, h:mm:ss a")}
-            </Text>
-            <Text size="xs" color="dimmed">
-              •
-            </Text>
-            <Text size="xs" color="dimmed" className={classes.info} miw={60}>
-              <CiStar />
-              {story?.score === 1
-                ? `${story?.score} point`
-                : `${story?.score} points`}
-            </Text>
-            <Text size="xs" color="dimmed">
-              •
-            </Text>
-            <Text size="xs" color="dimmed" className={classes.info}>
-              <BiComment />
-              {story?.descendants ? story?.descendants : null}
-            </Text>
+    <>
+      {story && (
+        <Card withBorder radius="md" p={0} className={classes.card}>
+          <Group noWrap spacing={0}>
+            <div className={classes.body}>
+              <Text
+                transform="uppercase"
+                color="dimmed"
+                weight={700}
+                size="xs"
+                className={classes.info}
+              >
+                <CiUser />
+                {story.by}
+              </Text>
+              <Text className={classes.title} mt="xs" mb="md">
+                {story.title}
+              </Text>
+              <Group noWrap spacing="xs">
+                <Text size="xs" color="dimmed">
+                  {moment
+                    .unix(Number(story.time))
+                    .format("MMMM Do YYYY, h:mm:ss a")}
+                </Text>
+                <Text size="xs" color="dimmed">
+                  •
+                </Text>
+                <Text
+                  size="xs"
+                  color="dimmed"
+                  className={classes.info}
+                  miw={60}
+                >
+                  <CiStar />
+                  {story.score === 1
+                    ? `${story.score} point`
+                    : `${story.score} points`}
+                </Text>
+                <Text size="xs" color="dimmed">
+                  •
+                </Text>
+                <Text size="xs" color="dimmed" className={classes.info}>
+                  <BiComment />
+                  {story.descendants}
+                </Text>
+              </Group>
+            </div>
           </Group>
-        </div>
-      </Group>
-    </Card>
+        </Card>
+      )}
+    </>
   );
 };
 

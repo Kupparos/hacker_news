@@ -6,12 +6,12 @@ import {
   ColorScheme,
   LoadingOverlay,
 } from "@mantine/core";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, useLocation } from "react-router-dom";
 import PageHeader from "./components/PageHeader";
 import { MainPage } from "./pages/MainPage";
 import NewsPage from "./pages/NewsPage";
 import { getData } from "./hooks/getData";
-import { ErrorPage } from "./components/ErrorPage";
+import { ErrorCard } from ".//components/ErrorCard";
 import { Story } from "./types";
 import { useAppDispatch } from "./hooks/redux";
 import { addStoryInList } from "./store/reducers/StoryReducer";
@@ -25,9 +25,17 @@ function App() {
   const [error, setError] = useState<boolean>(false);
   const [update, setUpdate] = useState<boolean>(false);
 
+  const location = useLocation();
+
   const dispatch = useAppDispatch();
 
+console.log(location)
+
   const getNewsList = async () => {
+    if (location.pathname !== "/") {
+      return;
+    }
+
     const ids = await getData<number[]>("newstories.json");
 
     if (ids instanceof Error) {
@@ -39,7 +47,7 @@ function App() {
 
   const getNews = async (id: number) => {
     const news = await getData<Story>(`item/${id}.json`);
-    
+
     if (!(news instanceof Error)) {
       dispatch(addStoryInList(news));
     }
@@ -53,7 +61,7 @@ function App() {
     });
 
     return setUpdate(false);
-  }, [update]);
+  }, [update, location.pathname]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -79,7 +87,7 @@ function App() {
       >
         <PageHeader />
         {error ? (
-          <ErrorPage />
+          <ErrorCard />
         ) : (
           <Switch>
             <Route path="/news/:id">
@@ -87,13 +95,14 @@ function App() {
             </Route>
             <Route path="/">
               {isLoading ? (
-                <LoadingOverlay visible={true} overlayBlur={2} />
+                <LoadingOverlay
+                  visible={true}
+                  overlayBlur={2}
+                  loaderProps={{ color: "yellow", variant: "bars" }}
+                />
               ) : (
                 <MainPage update={update} setUpdate={setUpdate} />
               )}
-            </Route>
-            <Route path="*">
-              <ErrorPage />
             </Route>
           </Switch>
         )}
