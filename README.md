@@ -2,7 +2,7 @@
 
 <h2>Description:</h2>
 
-<p>Single-page application using TypeScript, React, Redux, Mantine UI, React Router, Axios, Moment library</p>
+<p>Single-page application using TypeScript, React, Redux, Hacker News API, Mantine UI, React Router, Axios, Moment library</p>
 
 <h2>How to start:</h2>
 
