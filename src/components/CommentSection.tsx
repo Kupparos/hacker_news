@@ -10,7 +10,6 @@ import { getData } from "../hooks/getData";
 import { Comment } from "../types";
 import moment from "moment";
 import { IoChevronDownSharp } from "react-icons/io5";
-import { parseHTMLTags } from "../utils";
 
 const useStyles = createStyles((theme) => ({
   body: {
@@ -80,7 +79,7 @@ export const CommentSection: FC<CommentSimpleProps> = ({
               </div>
             </Group>
             <Text className={classes.body} size="sm">
-              {parseHTMLTags(comment.text)}
+              <div dangerouslySetInnerHTML={{__html: comment.text}}/>
             </Text>
             {comment.kids?.length !== 0 && (
               <UnstyledButton

@@ -29,8 +29,6 @@ function App() {
 
   const dispatch = useAppDispatch();
 
-console.log(location)
-
   const getNewsList = async () => {
     if (location.pathname !== "/") {
       return;
